@@ -12,12 +12,10 @@ class ArticleController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $articles = Article::with(['categories', 'tags', 'author'])
+        $articles = Article::with(['categories', 'tags', 'author'])//eager loading more than one relation
             ->when(request('category_id'), function($query) {
                 return $query->whereHas('categories', function($q) {
                     return $q->where('id', request('category_id'));
@@ -33,15 +31,16 @@ class ArticleController extends Controller
             })
             ->orderBy('id', 'desc')
             ->paginate(3);
+
         $all_categories = Category::all();
         $all_tags = Tag::all();
+
+
         return view('articles.index', compact('articles', 'all_categories', 'all_tags'));
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -52,8 +51,8 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreArticleRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreArticleRequest $request)
     {
@@ -81,12 +80,13 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Article  $article
-     * @return \Illuminate\Http\Response
+     * @param \App\Article $article
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function show(Article $article)
     {
-        $article->load(['categories', 'tags', 'author']);
+        $article->load(['categories', 'tags', 'author']);//eager loading
+
         $all_categories = Category::all();
         $all_tags = Tag::all();
 

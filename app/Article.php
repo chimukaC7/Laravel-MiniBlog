@@ -32,6 +32,7 @@ class Article extends Model implements HasMedia
 
     public function getCategoriesLinksAttribute()
     {
+        //transforming each category to a link
         $categories = $this->categories()->get()->map(function($category) {
             return '<a href="'.route('articles.index').'?category_id='.$category->id.'">'.$category->name.'</a>';
         })->implode(' | ');
